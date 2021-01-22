@@ -87,6 +87,14 @@ To train the model, I used the following parameters:
 2) epochs = 200
 3) batch_size = 128
 4) one_hot labels
+5) Optimizer - Adam Optimizer.
+
+How these parameters were chosen:
+1) Experimentally. The values between 1e-3 - 1e-5 has been considered. The rate 0.0005 - 0.0006 showed the fastest training speed till the maximum accuracy
+2) Experimantally. Values 10 - 200 were considered. The values between 150 - 200 has showed the acceptable accuracy. The value greater than 200 showed no additional profit.
+3) Experimantally. Considered the values - power of 2. 128 = 2^7
+4) One hot encoding - binary representation of all the unique image category. Provide faster access to each category of the image.
+5) Adam (= Adaptive Moment Estimation). [Overview of the different optimizers](https://arxiv.org/pdf/1609.04747.pdf) at the paragraph 4.6, 4.10 explains why Adam, which can be considered as a different combinations of the other optimizers, is better for usage. A short summary of why Adam is a good choice: it's computationally efficient and requires very little memory.
 
 #### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
@@ -109,7 +117,7 @@ Here are five German traffic signs that I found on the web:
 The mentioned images were classified perfect, as well as
 ![alt text][image6]
 
-However, the folowing 2 images were missclassified:
+However, the following 2 images were missclassified:
 ![alt text][image7] ![alt text][image8]
 
 I can assume that the model needs to be trained more precisely, because that images look very clear even for classification by human
@@ -131,3 +139,114 @@ Here are the results of the prediction:
 
 
 The model was able to correctly guess 6 of the 8 traffic signs, which gives an accuracy of 75%.
+
+#### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability.
+
+The result of top 5 softmax probabilities in a raw way looks like that:
+
+INFO:tensorflow:Restoring parameters from ./lenet
+TopKV2(values=array([[6.9766802e-01, 1.7054953e-01, 8.8648960e-02, 3.2393917e-02,
+        5.4805018e-03],
+       [1.0000000e+00, 2.9534826e-11, 3.5334247e-16, 3.3603949e-16,
+        1.7622580e-17],
+       [1.0000000e+00, 1.3792606e-13, 6.7945612e-15, 6.3335656e-15,
+        9.2442201e-16],
+       [1.0000000e+00, 5.6577815e-12, 5.0071848e-12, 1.5585289e-12,
+        2.2231360e-13],
+       [4.4449526e-01, 2.8652456e-01, 1.5980074e-01, 8.0277681e-02,
+        1.8021077e-02],
+       [4.7033024e-01, 1.9266245e-01, 1.2918560e-01, 8.1047580e-02,
+        5.0550640e-02],
+       [9.2234945e-01, 2.0823237e-02, 1.0969975e-02, 8.9479005e-03,
+        7.6923613e-03],
+       [1.0000000e+00, 2.5568959e-21, 1.9284084e-25, 1.6865276e-28,
+        4.8183433e-29]], dtype=float32), indices=array([[ 0,  8,  1,  4,  5],
+       [12, 40, 13, 35, 25],
+       [13, 14, 15, 39,  1],
+       [14, 13, 38, 34,  3],
+       [18, 24, 26, 27, 20],
+       [18, 11, 27, 25, 24],
+       [15,  2,  4,  3,  1],
+       [ 9, 10, 16, 41, 15]], dtype=int32))
+
+How it should be explained:
+
+1st picture's probabilities:
+
+| Label	| Sign name             | Probability  |
+|:-----:|:---------------------:|:------------:|
+| 0     | Speed limit (20 km/h) | 0.698        |
+| 8     | End of speed limit    | 0.175        |
+| 1     | Speed limit (30 km/h) | 0.088        |
+| 4     | Speed limit (70 km/h) | 0.032        |
+| 5     | Speed limit (80 km/h) | 0.005        |
+
+2nd picture's probabilities:
+
+| Label	| Sign name             | Probability  |
+|:-----:|:---------------------:|:------------:|
+| 12    | Priority road         |  1           |
+| 40    | Roundabout mandatory  |  0           |
+| 13    | Yield                 |  0           |
+| 35    | Ahead only            |  0           |
+| 25    | Road work             |  0           |
+
+3rd picture's probabilities:
+
+| Label	| Sign name             | Probability  |
+|:-----:|:---------------------:|:------------:|
+| 13    | Yield                 |  1           |
+| 14    | Stop                  |  0           |
+| 15    | No vehicles           |  0           |
+| 39    | Keep left             |  0           |
+| 1     | Speed limit (30 km/h) |  0           |
+
+4th picture's probabilities:
+
+| Label	| Sign name             | Probability  |
+|:-----:|:---------------------:|:------------:|
+| 14    | Stop                  |  1           |
+| 13    | Yield                 |  0           |
+| 38    | Keep right            |  0           |
+| 34    | Turn left ahead       |  0           |
+| 3     | Speed limit (60km/h)  |  0           |
+
+5th picture's probabilities:
+
+| Label	| Sign name                    | Probability  |
+|:-----:|:----------------------------:|:------------:|
+| 18    | General caution              |  0.444       |
+| 24    | Road narrows on the right    |  0.287       |
+| 26    | Traffic signals              |  0.160       |
+| 27    | Pedestrians                  |  0.080       |
+| 20    | Dangerous curve to the right |  0.018       |
+
+6th picture's probabilities:
+
+| Label	| Sign name                             | Probability  |
+|:-----:|:-------------------------------------:|:------------:|
+| 18    | General caution                       |  0.470       |
+| 11    | Right-of-way at the next intersection |  0.192       |
+| 27    | Pedestrians                           |  0.129       |
+| 25    | Road work                             |  0.080       |
+| 24    | Road narrows on the right             |  0.051       |
+
+7th picture's probabilities:
+
+| Label	| Sign name            | Probability  |
+|:-----:|:--------------------:|:------------:|
+| 15    | No vehicles          |  0.922       |
+| 2     | Speed limit (50km/h) |  0.021       |
+| 4     | Speed limit (70km/h) |  0.011       |
+| 3     | Speed limit (60km/h) |  0.009       |
+| 1     | Speed limit (30km/h) |  0.008       |
+
+8th picture's probabilities:
+
+| Label	| Sign name                                    | Probability  |
+|:-----:|:--------------------------------------------:|:------------:|
+| 9     | No passing                                   |  1           |
+| 10    | No passing for vehicles over 3.5 metric tons |  0           |
+| 16    | Vehicles over 3.5 metric tons prohibited     |  0           |
+| 41    | End of no passing                            |  0           |
+| 15    | No vehicles                                  |  0           |
